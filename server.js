@@ -66,3 +66,6 @@ app.use('/virusscan',VirusScan)
 const MacroScan = require('./routes/MacroScan')
 app.use('/macroscan',MacroScan)
 
+//팀 소개 페이지
+const Team = require('./routes/Team')
+app.use('/team', Team)
