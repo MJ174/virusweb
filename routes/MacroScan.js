@@ -76,7 +76,7 @@ router.post('/macroupload', upload.single('file'), (req, res) => {
     const { spawn } = require('child_process')
   
     const command = 'python'
-    const pyPath = path.join(__dirname, '../pyutile', 'VBAsearch.py')
+    const pyPath = path.join(__dirname, '../api', 'VBAsearch.py')
     const args = [pyPath, absFilePath]
     const options = {
       cwd: __dirname, // VBAsearch.py 파일이 있는 디렉토리로 설정
@@ -178,7 +178,7 @@ router.post('/macroupload', upload.single('file'), (req, res) => {
     const { spawn } = require('child_process')
   
     const command = 'python'
-    const pyPath = path.join(__dirname, '../pyutile', 'VBAremove.py')
+    const pyPath = path.join(__dirname, '../api', 'VBAremove.py')
     const args = [pyPath, absFilePath, removeFolderPath]
     const options = {
       cwd: __dirname, // VBAremove.py 파일이 있는 디렉토리로 설정

@@ -117,12 +117,12 @@ router.get('/scan', (req, res) => {
     const absFilePath = path
         .resolve(filePath)
         .replace(new RegExp(`\\${path.sep}`, 'g'), `\\\\`)
-    const pyPath = path.join(__dirname, '../pyutile', 'scanfile.py')
+    const pyPath = path.join(__dirname, '../api', 'scanfile.py')
     console.log(`스캔 요청 - 파일 경로: ${absFilePath}`)
     const { spawn } = require('child_process')
 
     const command = 'python'
-    //const pyPath = path.join(__dirname, '../pyutile', 'scanfile.py')
+    //const pyPath = path.join(__dirname, '../api', 'scanfile.py')
     const args = [pyPath, absFilePath]
     const options = {
         cwd: __dirname, // scanfile.py 파일이 있는 디렉토리로 설정
