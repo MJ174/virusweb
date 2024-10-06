@@ -13,8 +13,6 @@ function 로그인확인(요청, 응답, next) {
 }
 
 
-
-
 // MongoDB 연결
 MongoClient.connect(process.env.MONGODB_URL, function (error, client) {
     if (error) return console.log(error);
@@ -23,7 +21,7 @@ MongoClient.connect(process.env.MONGODB_URL, function (error, client) {
 
 // 게시판 메인 페이지
 router.get('/', function (요청, 응답) {
-    db.collection('board.post')
+    db.collection('virus_scan.post')
         .find()
         .toArray(function (에러, 결과) {
             console.log(결과);
@@ -46,14 +44,14 @@ router.post('/new', 로그인확인, function (요청, 응답) {
     };
 
     // 게시물 갯수 업데이트
-    db.collection('board.counter').findOne(
+    db.collection('virus_scan.counter').findOne(
         { name: '게시물갯수' },
         function (에러, 결과) {
             if (에러) return console.log(에러);
             var 총게시물갯수 = 결과.totalPost;
 
             // 새 게시물 추가
-            db.collection('board.post').insertOne(
+            db.collection('virus_scan.post').insertOne(
                 {
                     _id: 총게시물갯수 + 1,
                     ...newPost,
@@ -65,7 +63,7 @@ router.post('/new', 로그인확인, function (요청, 응답) {
                         console.log('게시물 추가 성공:', newPost);
 
                         // 게시물 갯수 업데이트
-                        db.collection('board.counter').updateOne(
+                        db.collection('virus_scan.counter').updateOne(
                             { name: '게시물갯수' },
                             { $inc: { totalPost: 1 } },
                             function (에러, 결과) {
@@ -85,7 +83,7 @@ router.post('/new', 로그인확인, function (요청, 응답) {
 
 // 게시물 상세 보기
 router.get('/detail/:id', function (요청, 응답) {
-    db.collection('board.post').findOne(
+    db.collection('virus_scan.post').findOne(
         { _id: parseInt(요청.params.id) },
         function (에러, 결과) {
             응답.render('detail.ejs', { data: 결과 });
@@ -95,7 +93,7 @@ router.get('/detail/:id', function (요청, 응답) {
 
 // 게시물 수정 페이지
 router.get('/detail/:id/edit', function (요청, 응답) {
-    db.collection('board.post').findOne(
+    db.collection('virus_scan.post').findOne(
         { _id: parseInt(요청.params.id) },
         function (에러, 결과) {
             응답.render('edit.ejs', { post: 결과 });
@@ -105,7 +103,7 @@ router.get('/detail/:id/edit', function (요청, 응답) {
 
 // 게시물 수정 (PUT 요청)
 router.put('/edit', function (요청, 응답) {
-    db.collection('board.post').updateOne(
+    db.collection('virus_scan.post').updateOne(
         { _id: parseInt(요청.body.id) },
         {
             $set: {
@@ -124,7 +122,7 @@ router.put('/edit', function (요청, 응답) {
 // 게시물 삭제 (DELETE 요청)
 router.delete('/delete', function (요청, 응답) {
     요청.body._id = parseInt(요청.body._id);
-    db.collection('board.post').deleteOne(
+    db.collection('virus_scan.post').deleteOne(
         { _id: 요청.body._id, 작성자: 요청.user.아이디 },
         function (에러, 결과) {
             if (에러) {
