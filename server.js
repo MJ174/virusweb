@@ -5,8 +5,6 @@ const methodOverride = require('method-override')
 const MongoClient = require('mongodb').MongoClient
 const app = express()
 
-
-
 const passport = require('passport')
 const session = require('express-session')
 

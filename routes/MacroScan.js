@@ -4,7 +4,6 @@ const path = require('path')
 const multer = require('multer')
 const MongoClient = require('mongodb').MongoClient
 
-
 const allowedExtensions = [
     '.doc',
     '.docx',
