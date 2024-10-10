@@ -22,7 +22,6 @@ MongoClient.connect(process.env.MONGODB_URL, function (error, client) {
   db = client.db('virus_scan')
 })
 
-
 // 파일 저장 디렉토리 설정
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
@@ -68,15 +67,15 @@ router.post('/macroupload', upload.single('file'), (req, res) => {
   
   router.get('/mecrosearch', (req, res) => {
     const filePath = uploadFilePath
-    const absFilePath = path
-      .resolve(filePath)
-      .replace(new RegExp(`\\${path.sep}`, 'g'), `\\\\`)
-    console.log(`매크로 검색 요청 - 파일 경로: ${absFilePath}`)
+//  const filePath = path
+//      .resolve(filePath)
+//    .replace(new RegExp(`\\${path.sep}`, 'g'), `\\\\`)
+    console.log(`매크로 검색 요청 - 파일 경로: ${filePath}`)
     const { spawn } = require('child_process')
   
-    const command = 'python'
+    const command = 'python3'
     const pyPath = path.join(__dirname, '../api', 'VBAsearch.py')
-    const args = [pyPath, absFilePath]
+    const args = [pyPath, filePath]
     const options = {
       cwd: __dirname, // VBAsearch.py 파일이 있는 디렉토리로 설정
     }
@@ -170,31 +169,45 @@ router.post('/macroupload', upload.single('file'), (req, res) => {
   router.get('/removemacro', (req, res) => {
     const filePath = uploadFilePath
     const removeFolderPath = path.resolve(__dirname, '../remove')
-    const absFilePath = path
-      .resolve(filePath)
-      .replace(new RegExp(`\\${path.sep}`, 'g'), `\\\\`)
-    console.log(`매크로 제거 요청 - 파일 경로: ${absFilePath}`)
+    console.log(removeFolderPath)
+//    const filePath = path
+//      .resolve(filePath)
+//      .replace(new RegExp(`\\${path.sep}`, 'g'), `\\\\`)
+    console.log(`매크로 제거 요청 - 파일 경로: ${filePath}`)
     const { spawn } = require('child_process')
   
-    const command = 'python'
+    const command = 'python3'
     const pyPath = path.join(__dirname, '../api', 'VBAremove.py')
-    const args = [pyPath, absFilePath, removeFolderPath]
+    const args = [pyPath, filePath, removeFolderPath]
     const options = {
       cwd: __dirname, // VBAremove.py 파일이 있는 디렉토리로 설정
     }
   
     const pythonProcess = spawn(command, args, options)
-  
+    
     pythonProcess.stdout.on('data', (data) => {
-      const result = JSON.parse(data) // 파이썬에서 반환된 JSON 파싱
-      const fixFilePath = result.file_path // file_path 값을 추출
-      const fileStream = fs.createReadStream(fixFilePath)
-      const originalExtension = path.extname(filePath)
-      const fileName = `fixed_file${originalExtension}` // 원본 확장자를 유지한 파일명 설정
-      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`) // 다운로드 시 파일명 설정
-      fileStream.pipe(res)
-      deleteFile(fixFilePath)
-    })
+    const result = JSON.parse(data); // 파이썬에서 반환된 JSON 파싱
+    const fixFilePath = result.file_path; // file_path 값을 추출
+    const fileStream = fs.createReadStream(fixFilePath);
+    const originalExtension = path.extname(filePath);
+    const fileName = `fixed_file${originalExtension}`; // 원본 확장자를 유지한 파일명 설정
+    
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`); // 다운로드 시 파일명 설정
+    
+    // 파일 스트리밍 처리
+    fileStream.pipe(res);
+  
+    // 파일 스트림이 완료된 후에 파일 삭제
+    fileStream.on('end', () => {
+      deleteFile(fixFilePath); // 스트리밍이 완료된 후에 파일 삭제
+    });
+    
+    // 스트림 중 오류 발생 시 처리
+    fileStream.on('error', (err) => {
+      console.error('File stream error:', err);
+      res.status(500).send('Error occurred while sending the file.');
+    });
+  });
   
     pythonProcess.stdout.on('end', () => {
       console.log('Python process ended')

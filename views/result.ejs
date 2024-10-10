@@ -7,20 +7,36 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
 
   <title>탐지 결과</title>
+  <style>
+    .card {
+      border-radius: 15px;
+    }
+    .safe {
+      background-color: #d4edda; /* Light green for safe files */
+      border-color: #c3e6cb;
+    }
+    .malicious {
+      background-color: #f8d7da; /* Light red for malicious files */
+      border-color: #f5c6cb;
+    }
+    .header {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
   <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-    <h5 class="my-0 mr-md-auto font-weight-normal">VIRUSWEB</h5>
+    <a class="my-0 mr-md-auto font-weight-normal p-0 text-dark" href="/" style="font-size: 1rem;">
+      <img class="mb-4" src="/public/css/home.png" alt="" width="60" />
+    </a>
     <%- include('nav.html') %>
     <a href="/login">
       <button class="btn btn-outline-primary" type="button">로그인</button>
     </a>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-
-  <ul class="list-group">
-    <li class="list-group-item">
+  <div class="container">
+    <div class="header text-center">
       <h4>파일명: <%= scanResult.data.attributes.names[scanResult.data.attributes.names.length - 1] %></h4>
       <p>타입: <%= scanResult.data.attributes.type_description %></p>
       <% if (scanResult.data.attributes.popular_threat_classification) { %>
@@ -28,39 +44,50 @@
           <p>검출된 바이러스명: <%= threat.value %></p>
         <% } %>
       <% } else { %>
-        <p>해당 파일은 안전합니다. :)</p>
+        <div class="alert alert-success">해당 파일은 안전합니다. :)</div>
       <% } %>
-    </li>
-  </ul>
+    </div>
 
-  <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-    <div class="container">
-      <div class="row">
-        <% for (const engine of scanEngine) { %>
-          <% if (scanResult.data.attributes.last_analysis_results[engine].category === 'malicious') { %>
-            <div class="col-md-3 search" id="card<%= engine %>">
-              <div class="card border-secondary mb-3" style="max-width: 20rem;">
-                <div class="card-header">
-                  <%= scanResult.data.attributes.last_analysis_results[engine].engine_name %>
-                </div>
-                <div class="card-body">
-                  <p class="card-title">
-                    <%= scanResult.data.attributes.last_analysis_results[engine].category %>
-                  </p>
-                  <p class="card-text">
-                    <%= scanResult.data.attributes.last_analysis_results[engine].result %>
-                  </p>
-                </div>
+    <div class="row">
+      <% for (const engine of scanEngine) { %>
+        <% if (scanResult.data.attributes.last_analysis_results[engine].category === 'malicious') { %>
+          <div class="col-md-4 mb-4">
+            <div class="card malicious">
+              <div class="card-header">
+                <%= scanResult.data.attributes.last_analysis_results[engine].engine_name %>
+              </div>
+              <div class="card-body">
+                <p class="card-title">
+                  <%= scanResult.data.attributes.last_analysis_results[engine].category %>
+                </p>
+                <p class="card-text">
+                  <%= scanResult.data.attributes.last_analysis_results[engine].result %>
+                </p>
               </div>
             </div>
-          <% } %>
+          </div>
+        <% } else { %>
+          <div class="col-md-4 mb-4">
+            <div class="card safe">
+              <div class="card-header">
+                <%= scanResult.data.attributes.last_analysis_results[engine].engine_name %>
+              </div>
+              <div class="card-body">
+                <p class="card-title">안전한 파일</p>
+                <p class="card-text">
+                  <%= scanResult.data.attributes.last_analysis_results[engine].result %>
+                </p>
+              </div>
+            </div>
+          </div>
         <% } %>
-      </div>
+      <% } %>
     </div>
   </div>
 
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script>
-    $('.search').click(function() {
+    $('.card').click(function() {
       const cardText = $(this).find('.card-text').text();
       const cardId = $(this).attr('id');
 
@@ -76,4 +103,7 @@
     });
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

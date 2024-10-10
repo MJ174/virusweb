@@ -29,3 +29,22 @@ footer p {
     cursor: pointer;
     z-index: 1000;
 }
+
+/* 테이블 스타일 */
+.table {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 테이블 헤더 스타일 */
+.thead-light th {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+/* 게시판 제목 스타일 */
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+}

@@ -99,6 +99,7 @@ router.post('/upload', upload.single('file'), (req, res) => {
     }
     const filePath = path.resolve(req.file.path)
     uploadFilePath = filePath
+    console.log(uploadFilePath)
     const fileExtension = path.extname(req.file.originalname).toLowerCase()
     if (!allowedExtensions.includes(fileExtension)) {
         deleteFile(filePath)
@@ -114,16 +115,16 @@ router.post('/upload', upload.single('file'), (req, res) => {
 //파이썬 프로그램 호출 및 파일 경로 전송
 router.get('/scan', (req, res) => {
     const filePath = uploadFilePath
-    const absFilePath = path
-        .resolve(filePath)
-        .replace(new RegExp(`\\${path.sep}`, 'g'), `\\\\`)
+//    const absFilePath = path
+//        .resolve(filePath)
+//        .replace(new RegExp(`\\${path.sep}`, 'g'), `\\\\`)
     const pyPath = path.join(__dirname, '../api', 'scanfile.py')
-    console.log(`스캔 요청 - 파일 경로: ${absFilePath}`)
+    console.log(`스캔 요청 - 파일 경로: ${filePath}`)
     const { spawn } = require('child_process')
 
-    const command = 'python'
+    const command = 'python3'
     //const pyPath = path.join(__dirname, '../api', 'scanfile.py')
-    const args = [pyPath, absFilePath]
+    const args = [pyPath, filePath]
     const options = {
         cwd: __dirname, // scanfile.py 파일이 있는 디렉토리로 설정
     }
